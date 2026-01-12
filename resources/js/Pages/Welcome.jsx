@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+
 export default function Welcome() {
     return (
         <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center">
@@ -11,9 +13,12 @@ export default function Welcome() {
                 <button className="bg-indigo-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-indigo-600 transition">
                     Crear Tarea
                 </button>
-                <button className="bg-white text-indigo-500 border border-indigo-500 px-6 py-2 rounded-lg hover:bg-indigo-50 transition">
+                <Link
+                    href={route('tasks.index')}
+                    className="bg-white text-indigo-500 border border-indigo-500 px-6 py-2 rounded-lg hover:bg-indigo-50 transition"
+                >
                     Ver Listado
-                </button>
+                </Link>
             </div>
         </div>
     );

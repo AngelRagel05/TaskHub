@@ -1,0 +1,7 @@
+export default function Index() {
+    return (
+        <div>
+            <h1>Listado de tareas</h1>
+        </div>
+    );
+}
