@@ -5,6 +5,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Memoria Temporal4
+
+$tareas = [];
+
 // Página Pública de Bienvenida
 
 Route::get('/', function () {
@@ -16,14 +20,31 @@ Route::get('/', function () {
     ]);
 });
 
-// Página de Tablero (Dashboard)
+// Crear Tarea
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/crear-tarea', function () {
+    return Inertia::render('CrearTarea');
+})->name('crear-tarea');
 
-Route::get('/tasks', function () {
-    return Inertia::render('Tasks/Index');
+Route::post('/crear-tarea', function (\Illuminate\Http\Request $request) use (&$tareas) {
+    $nuevaTarea = [
+        'id' => count($tareas) + 1,
+        'titulo' => $request->titulo,
+    ];
+    $tareas[] = $nuevaTarea;
+
+    // Redirige al listado después de crear
+    return redirect()->route('tasks.index');
+})->name('tareas.store');
+
+// Listar Tareas
+
+Route::get('/tasks', function () use ($tareas) {
+
+    return Inertia::render('Tasks/Index', [
+        'tareasIniciales' => $tareas
+    ]);
+
 })->name('tasks.index');
 
 Route::middleware('auth')->group(function () {
@@ -32,4 +53,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
