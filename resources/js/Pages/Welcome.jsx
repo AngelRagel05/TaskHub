@@ -87,9 +87,15 @@ export default function Welcome() {
             <div className="mt-10 flex gap-4">
                 <button
                     onClick={() => setOcultarLaravel(!ocultarLaravel)}
-                    className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition"
+                    className={`px-6 py-2 rounded-lg transition ${
+                        ocultarLaravel
+                            ? "bg-gray-400 hover:bg-gray-500 text-white"
+                            : "bg-indigo-500 hover:bg-indigo-600 text-white"
+                    }`}
                 >
-                    {ocultarLaravel ? "Mostrar" : "Ocultar"} tareas de Laravel
+                    {ocultarLaravel
+                        ? "Mostrar todas las tareas"
+                        : "Ocultar tareas Laravel"}
                 </button>
             </div>
         </div>
