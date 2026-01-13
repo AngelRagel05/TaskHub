@@ -9,12 +9,28 @@ export default function Welcome() {
     ];
     const fechaActual = new Date().toLocaleDateString();
 
-    function frase(texto) {
-        return texto.toLowerCase().includes("laravel") ? (
-            <p className="text-blue-500">{texto}</p>
-        ) : (
-            <p className="text-red-500">{texto}</p>
-        );
+    function colorFrase(texto) {
+        return texto.toLowerCase().includes("laravel")
+            ? "text-blue-500"
+            : "text-red-500";
+    }
+
+    function tareasLargas(texto) {
+        return texto.length > 20
+        ? "font-bold italic"
+        : "";
+    }
+
+    function tareaEmoji(texto) {
+        return texto.toLowerCase().includes("laravel") 
+        ? "🐘"
+        : texto.toLowerCase().includes("react") 
+        ? "⚛️"
+        : texto.toLowerCase().includes("tailwind") 
+        ? "🌬️"
+        : texto.toLowerCase().includes("producción") 
+        ? "🚀"
+        : "📝";
     }
 
     return (
@@ -34,6 +50,8 @@ export default function Welcome() {
                     Tareas de hoy:
                 </h2>
 
+                <p>Tienes {tareasPendientes.length} tareas pendientes:</p>
+
                 <ul className="space-y-3">
                     {tareasPendientes.map((tarea, index) => (
                         <li
@@ -41,7 +59,7 @@ export default function Welcome() {
                             className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
                         >
                             <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                            {frase(tarea)}
+                            <p className={`${colorFrase(tarea)} ${tareasLargas(tarea)}`}>{tarea} {tareaEmoji(tarea)}</p>
                         </li>
                     ))}
                 </ul>
