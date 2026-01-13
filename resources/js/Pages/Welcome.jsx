@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Welcome() {
     // 1. Definimos variables (lógica de JavaScript)
     const nombreUsuario = "Ángel";
@@ -8,6 +10,7 @@ export default function Welcome() {
         "Desplegar en producción",
     ];
     const fechaActual = new Date().toLocaleDateString();
+    const [ocultarLaravel, setOcultarLaravel] = useState(false);
 
     function colorFrase(texto) {
         return texto.toLowerCase().includes("laravel")
@@ -16,21 +19,19 @@ export default function Welcome() {
     }
 
     function tareasLargas(texto) {
-        return texto.length > 20
-        ? "font-bold italic"
-        : "";
+        return texto.length > 20 ? "font-bold italic" : "";
     }
 
     function tareaEmoji(texto) {
-        return texto.toLowerCase().includes("laravel") 
-        ? "🐘"
-        : texto.toLowerCase().includes("react") 
-        ? "⚛️"
-        : texto.toLowerCase().includes("tailwind") 
-        ? "🌬️"
-        : texto.toLowerCase().includes("producción") 
-        ? "🚀"
-        : "📝";
+        return texto.toLowerCase().includes("laravel")
+            ? "🐘"
+            : texto.toLowerCase().includes("react")
+            ? "⚛️"
+            : texto.toLowerCase().includes("tailwind")
+            ? "🌬️"
+            : texto.toLowerCase().includes("producción")
+            ? "🚀"
+            : "📝";
     }
 
     return (
@@ -53,21 +54,42 @@ export default function Welcome() {
                 <p>Tienes {tareasPendientes.length} tareas pendientes:</p>
 
                 <ul className="space-y-3">
-                    {tareasPendientes.map((tarea, index) => (
-                        <li
-                            key={index}
-                            className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
-                        >
-                            <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                            <p className={`${colorFrase(tarea)} ${tareasLargas(tarea)}`}>{tarea} {tareaEmoji(tarea)}</p>
-                        </li>
-                    ))}
+                    {tareasPendientes
+                        .filter((tarea) =>
+                            ocultarLaravel
+                                ? !tarea.toLocaleLowerCase().includes("laravel")
+                                : true
+                        )
+                        .map((tarea, index) => (
+                            <li
+                                key={index}
+                                className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
+                            >
+                                <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                                <p
+                                    className={`${colorFrase(
+                                        tarea
+                                    )} ${tareasLargas(tarea)}`}
+                                >
+                                    {tarea} {tareaEmoji(tarea)}
+                                </p>
+                            </li>
+                        ))}
                 </ul>
             </div>
 
             <div className="mt-10 flex gap-4">
                 <button className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition">
                     Nueva Tarea
+                </button>
+            </div>
+
+            <div className="mt-10 flex gap-4">
+                <button
+                    onClick={() => setOcultarLaravel(!ocultarLaravel)}
+                    className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition"
+                >
+                    {ocultarLaravel ? "Mostrar" : "Ocultar"} tareas de Laravel
                 </button>
             </div>
         </div>
