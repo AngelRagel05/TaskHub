@@ -10,6 +10,7 @@ export default function Welcome() {
         "Desplegar en producción",
     ];
     const fechaActual = new Date().toLocaleDateString();
+    const mensaje = "¡Ánimo, hoy es un gran día para programar!";
 
     const [ocultarLaravel, setOcultarLaravel] = useState(false);
     const [filtro, setFiltro] = useState("");
@@ -46,6 +47,7 @@ export default function Welcome() {
 
     return (
         <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-6">
+            <p className="p-4">{mensaje}</p>
             {/* 2. Mostramos variables simples usando { } */}
             <h1 className="text-4xl font-black text-indigo-600 uppercase">
                 TaskHub de {nombreUsuario}
