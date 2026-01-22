@@ -1,19 +1,28 @@
-import { useState } from "react";
+import { use, useState } from "react";
 
 export default function Welcome() {
     // 1. Definimos variables (lógica de JavaScript)
     const nombreUsuario = "Ángel";
-    const tareasPendientes = [
+
+    const [tareas, setTareas] = useState([
         "Instalar Laravel",
         "Configurar React",
         "Aprender Tailwind",
         "Desplegar en producción",
-    ];
+    ]);
+
     const fechaActual = new Date().toLocaleDateString();
     const mensaje = "¡Ánimo, hoy es un gran día para programar!";
 
     const [ocultarLaravel, setOcultarLaravel] = useState(false);
     const [filtro, setFiltro] = useState("");
+
+    const añadirTarea = () => {
+        const nuevaTarea = prompt("¿Cuál es la nueva tarea?");
+        if (nuevaTarea) {
+            setTareas([...tareas, nuevaTarea]);
+        }
+    };
 
     function colorFrase(texto) {
         return texto.toLowerCase().includes("laravel")
@@ -29,15 +38,15 @@ export default function Welcome() {
         return texto.toLowerCase().includes("laravel")
             ? "🐘"
             : texto.toLowerCase().includes("react")
-            ? "⚛️"
-            : texto.toLowerCase().includes("tailwind")
-            ? "🌬️"
-            : texto.toLowerCase().includes("producción")
-            ? "🚀"
-            : "📝";
+              ? "⚛️"
+              : texto.toLowerCase().includes("tailwind")
+                ? "🌬️"
+                : texto.toLowerCase().includes("producción")
+                  ? "🚀"
+                  : "📝";
     }
 
-    const tareasFiltradas = tareasPendientes.filter((tarea) => {
+    const tareasFiltradas = tareas.filter((tarea) => {
         const pasaFiltro = tarea.toLowerCase().includes(filtro.toLowerCase());
         const pasaLaravel = ocultarLaravel
             ? !tarea.toLowerCase().includes("laravel")
@@ -61,7 +70,7 @@ export default function Welcome() {
             {/* 4. Filtro de tareas */}
             <div className="mt-6 w-full max-w-md">
                 <input
-                    type = "text"
+                    type="text"
                     placeholder="Filtra tus tareas..."
                     value={filtro}
                     onChange={(e) => setFiltro(e.target.value)}
@@ -79,27 +88,30 @@ export default function Welcome() {
 
                 <ul className="space-y-3">
                     {tareasFiltradas.map((tarea, index) => (
-                            <li
-                                key={index}
-                                className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
+                        <li
+                            key={index}
+                            className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
+                        >
+                            <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                            <p
+                                className={`${colorFrase(
+                                    tarea,
+                                )} ${tareasLargas(tarea)}`}
                             >
-                                <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                                <p
-                                    className={`${colorFrase(
-                                        tarea
-                                    )} ${tareasLargas(tarea)}`}
-                                >
-                                    {tarea} {tareaEmoji(tarea)}
-                                </p>
-                            </li>
-                        ))}
+                                {tarea} {tareaEmoji(tarea)}
+                            </p>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
             {/* 6. Botones de acción */}
             <div className="mt-10 flex gap-4">
-                <button className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition">
-                    Nueva Tarea
+                <button
+                    onClick={añadirTarea}
+                    className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition"
+                >
+                    Añadir tarea
                 </button>
             </div>
 
