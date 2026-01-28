@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState } from "react";
 
 export default function Welcome() {
     // 1. Definimos variables (lógica de JavaScript)
@@ -11,6 +11,9 @@ export default function Welcome() {
         "Desplegar en producción",
     ]);
 
+    // --- NUEVO: 1. Variable de estado contador inicializada en 0 ---
+    const [contador, setContador] = useState(0);
+
     const fechaActual = new Date().toLocaleDateString();
     const mensaje = "¡Ánimo, hoy es un gran día para programar!";
 
@@ -18,9 +21,15 @@ export default function Welcome() {
     const [filtro, setFiltro] = useState("");
 
     const añadirTarea = () => {
+        // Opcional: Evitar que añada más si ya está llena (mejora de UX)
+        if (contador >= 10) return; 
+
         const nuevaTarea = prompt("¿Cuál es la nueva tarea?");
+        
         if (nuevaTarea) {
             setTareas([...tareas, nuevaTarea]);
+            // --- NUEVO: 2. Incrementamos el contador al añadir tarea ---
+            setContador(contador + 1);
         }
     };
 
@@ -67,6 +76,11 @@ export default function Welcome() {
                 Hoy es: {fechaActual}
             </p>
 
+            {/* Mostramos el contador (Opcional, para ver que funciona) */}
+            <p className="text-sm text-slate-400 mt-1">
+                Tareas añadidas en esta sesión: {contador}
+            </p>
+
             {/* 4. Filtro de tareas */}
             <div className="mt-6 w-full max-w-md">
                 <input
@@ -78,7 +92,7 @@ export default function Welcome() {
                 />
             </div>
 
-            {/* 5. Listado dinámico (aquí es donde React brilla) */}
+            {/* 5. Listado dinámico */}
             <div className="mt-8 w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
                 <h2 className="text-xl font-bold mb-4 text-slate-800">
                     Tareas de hoy:
@@ -95,7 +109,7 @@ export default function Welcome() {
                             <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
                             <p
                                 className={`${colorFrase(
-                                    tarea,
+                                    tarea
                                 )} ${tareasLargas(tarea)}`}
                             >
                                 {tarea} {tareaEmoji(tarea)}
@@ -107,11 +121,19 @@ export default function Welcome() {
 
             {/* 6. Botones de acción */}
             <div className="mt-10 flex gap-4">
+                {/* --- NUEVO: 3. Condicional para color y texto --- */}
                 <button
                     onClick={añadirTarea}
-                    className="bg-indigo-500 text-white px-6 py-2 rounded-lg hover:bg-indigo-600 transition"
+                    // Si contador es 10, desactivamos el botón (disabled) para que no se pulse
+                    disabled={contador >= 10}
+                    className={`px-6 py-2 rounded-lg text-white transition ${
+                        contador >= 10
+                            ? "bg-red-500 cursor-not-allowed" // Estilo rojo si está lleno
+                            : "bg-indigo-500 hover:bg-indigo-600" // Estilo normal
+                    }`}
                 >
-                    Añadir tarea
+                    {/* Texto condicional: Si es >= 10 muestra "Lista Llena", si no "Añadir tarea" */}
+                    {contador >= 10 ? "¡Lista Llena!" : "Añadir tarea"}
                 </button>
             </div>
 
