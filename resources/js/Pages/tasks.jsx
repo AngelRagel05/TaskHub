@@ -58,6 +58,38 @@ const Tasks = () => {
                     Añadir
                 </button>
             </div>
+
+            <div className="mb-4">
+                {tasks.map((task) => (
+                    <TaskItem
+                        key={task.id}
+                        task={task}
+                        onToggleComplete={(id) =>
+                            setTasks(
+                                tasks.map((t) =>
+                                    t.id === id
+                                        ? { ...t, completed: !t.completed }
+                                        : t,
+                                ),
+                            )
+                        }
+                        onUpdateTitle={(id, newTitle) =>
+                            setTasks(
+                                tasks.map((t) =>
+                                    t.id === id ? { ...t, title: newTitle } : t,
+                                ),
+                            )
+                        }
+                    />
+                ))}
+            </div>
+
+            <button
+                onClick={() => setTasks(tasks.filter((t) => !t.completed))}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+                Limpiar lista
+            </button>
         </div>
     );
 };
