@@ -64,4 +64,9 @@ Route::get('/test', function () {
     return Inertia::render('Test');
 });
 
+// Nueva ruta para Tasks
+Route::get('/tasks', function () {
+    return Inertia::render('tasks'); // aquí cargará Tasks.jsx
+});
+
 require __DIR__ . '/auth.php';
