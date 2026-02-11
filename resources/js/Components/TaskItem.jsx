@@ -5,6 +5,8 @@ export default function TaskItem({ task }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(task.title);
 
+    const [editDescription, setEditDescription] = useState(task.description || '');
+
     const toggleComplete = () => {
         router.patch(`/tasks/${task.id}`, {
             is_completed: !task.is_completed
@@ -20,7 +22,8 @@ export default function TaskItem({ task }) {
     const updateTask = (e) => {
         e.preventDefault();
         router.patch(`/tasks/${task.id}`, {
-            title: editTitle
+            title: editTitle,
+            description: editDescription
         }, {
             onSuccess: () => setIsEditing(false),
             preserveScroll: true
@@ -44,24 +47,36 @@ export default function TaskItem({ task }) {
                 />
                 
                 {isEditing ? (
-                    <form onSubmit={updateTask} className="flex-1 flex gap-2">
+                    <form onSubmit={updateTask} className="flex-1 flex flex-col gap-2">
                         <input
                             type="text"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
-                            className="flex-1 p-1 border-b border-indigo-500 focus:outline-none bg-slate-50 rounded"
+                            className="w-full p-2 border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50 rounded-lg text-sm font-medium"
+                            placeholder="Título de la tarea"
                             autoFocus
                         />
-                        <button type="submit" className="text-green-600 hover:text-green-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                        </button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="text-slate-400 hover:text-slate-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                        </button>
+                        <textarea
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                            className="w-full p-2 border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50 rounded-lg text-xs"
+                            placeholder="Descripción (opcional)"
+                            rows="2"
+                        ></textarea>
+                        <div className="flex justify-end gap-2 mt-1">
+                            <button type="submit" className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                                Guardar
+                            </button>
+                            <button type="button" onClick={() => setIsEditing(false)} className="flex items-center gap-1 px-3 py-1 bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-300 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                                Cancelar
+                            </button>
+                        </div>
                     </form>
                 ) : (
                     <div className="flex flex-col flex-1">
