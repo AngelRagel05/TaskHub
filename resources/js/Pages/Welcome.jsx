@@ -1,155 +1,118 @@
-import { useState } from "react";
+import React from 'react';
+import { useForm, Head } from '@inertiajs/react';
+import Stats from '@/Components/Stats';
+import TaskItem from '@/Components/TaskItem';
 
-export default function Welcome() {
-    // 1. Definimos variables (lógica de JavaScript)
-    const nombreUsuario = "Ángel";
-
-    const [tareas, setTareas] = useState([
-        "Instalar Laravel",
-        "Configurar React",
-        "Aprender Tailwind",
-        "Desplegar en producción",
-    ]);
-
-    // --- NUEVO: 1. Variable de estado contador inicializada en 0 ---
-    const [contador, setContador] = useState(0);
-
-    const fechaActual = new Date().toLocaleDateString();
-    const mensaje = "¡Ánimo, hoy es un gran día para programar!";
-
-    const [ocultarLaravel, setOcultarLaravel] = useState(false);
-    const [filtro, setFiltro] = useState("");
-
-    const añadirTarea = () => {
-        // Opcional: Evitar que añada más si ya está llena (mejora de UX)
-        if (contador >= 10) return; 
-
-        const nuevaTarea = prompt("¿Cuál es la nueva tarea?");
-        
-        if (nuevaTarea) {
-            setTareas([...tareas, nuevaTarea]);
-            // --- NUEVO: 2. Incrementamos el contador al añadir tarea ---
-            setContador(contador + 1);
-        }
-    };
-
-    function colorFrase(texto) {
-        return texto.toLowerCase().includes("laravel")
-            ? "text-blue-500"
-            : "text-red-500";
-    }
-
-    function tareasLargas(texto) {
-        return texto.length > 20 ? "font-bold italic" : "";
-    }
-
-    function tareaEmoji(texto) {
-        return texto.toLowerCase().includes("laravel")
-            ? "🐘"
-            : texto.toLowerCase().includes("react")
-              ? "⚛️"
-              : texto.toLowerCase().includes("tailwind")
-                ? "🌬️"
-                : texto.toLowerCase().includes("producción")
-                  ? "🚀"
-                  : "📝";
-    }
-
-    const tareasFiltradas = tareas.filter((tarea) => {
-        const pasaFiltro = tarea.toLowerCase().includes(filtro.toLowerCase());
-        const pasaLaravel = ocultarLaravel
-            ? !tarea.toLowerCase().includes("laravel")
-            : true;
-        return pasaFiltro && pasaLaravel;
+export default function Welcome({ tasks = [] }) {
+    const { data, setData, post, processing, reset, errors } = useForm({
+        title: '',
+        description: '',
+        prioridad: 'baja'
     });
 
+    const submit = (e) => {
+        e.preventDefault();
+        post('/tasks', {
+            onSuccess: () => reset(),
+            preserveScroll: true
+        });
+    };
+
     return (
-        <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-6">
-            <p className="p-4">{mensaje}</p>
-            {/* 2. Mostramos variables simples usando { } */}
-            <h1 className="text-4xl font-black text-indigo-600 uppercase">
-                TaskHub de {nombreUsuario}
-            </h1>
+        <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+            <Head title="TaskHub - Mis Tareas" />
+            
+            <div className="max-w-3xl mx-auto">
+                {/* Header */}
+                <header className="text-center mb-12">
+                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl mb-2">
+                        Task<span className="text-indigo-600">Hub</span>
+                    </h1>
+                    <p className="text-lg text-slate-600">Gestiona tus tareas de forma eficiente y sencilla.</p>
+                </header>
 
-            {/* 3. Fecha actual  */}
-            <p className="text-slate-500 mt-2 font-medium">
-                Hoy es: {fechaActual}
-            </p>
+                {/* Stats Section */}
+                <Stats tasks={tasks} />
 
-            {/* Mostramos el contador (Opcional, para ver que funciona) */}
-            <p className="text-sm text-slate-400 mt-1">
-                Tareas añadidas en esta sesión: {contador}
-            </p>
+                {/* Create Task Form */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
+                    <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Nueva Tarea
+                    </h2>
+                    
+                    <form onSubmit={submit} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Título</label>
+                                <input
+                                    type="text"
+                                    value={data.title}
+                                    onChange={e => setData('title', e.target.value)}
+                                    className={`w-full p-2.5 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${errors.title ? 'border-red-500' : 'border-slate-200'}`}
+                                    placeholder="¿Qué hay que hacer?"
+                                />
+                                {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Prioridad</label>
+                                <select
+                                    value={data.prioridad}
+                                    onChange={e => setData('prioridad', e.target.value)}
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                                >
+                                    <option value="baja">Baja</option>
+                                    <option value="media">Media</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                            </div>
+                        </div>
 
-            {/* 4. Filtro de tareas */}
-            <div className="mt-6 w-full max-w-md">
-                <input
-                    type="text"
-                    placeholder="Filtra tus tareas..."
-                    value={filtro}
-                    onChange={(e) => setFiltro(e.target.value)}
-                    className="w-full p-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Descripción (Opcional)</label>
+                            <textarea
+                                value={data.description}
+                                onChange={e => setData('description', e.target.value)}
+                                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                                rows="2"
+                                placeholder="Añade algún detalle adicional..."
+                            ></textarea>
+                        </div>
 
-            {/* 5. Listado dinámico */}
-            <div className="mt-8 w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
-                <h2 className="text-xl font-bold mb-4 text-slate-800">
-                    Tareas de hoy:
-                </h2>
-
-                <p>Tienes {tareasFiltradas.length} tareas pendientes:</p>
-
-                <ul className="space-y-3">
-                    {tareasFiltradas.map((tarea, index) => (
-                        <li
-                            key={index}
-                            className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"
-                        >
-                            <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                            <p
-                                className={`${colorFrase(
-                                    tarea
-                                )} ${tareasLargas(tarea)}`}
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 disabled:opacity-50 transition-all shadow-sm shadow-indigo-100"
                             >
-                                {tarea} {tareaEmoji(tarea)}
-                            </p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                                {processing ? 'Guardando...' : 'Añadir Tarea'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-            {/* 6. Botones de acción */}
-            <div className="mt-10 flex gap-4">
-                {/* --- NUEVO: 3. Condicional para color y texto --- */}
-                <button
-                    onClick={añadirTarea}
-                    // Si contador es 10, desactivamos el botón (disabled) para que no se pulse
-                    disabled={contador >= 10}
-                    className={`px-6 py-2 rounded-lg text-white transition ${
-                        contador >= 10
-                            ? "bg-red-500 cursor-not-allowed" // Estilo rojo si está lleno
-                            : "bg-indigo-500 hover:bg-indigo-600" // Estilo normal
-                    }`}
-                >
-                    {/* Texto condicional: Si es >= 10 muestra "Lista Llena", si no "Añadir tarea" */}
-                    {contador >= 10 ? "¡Lista Llena!" : "Añadir tarea"}
-                </button>
-            </div>
+                {/* Tasks List */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-xl font-bold text-slate-800">Tus Tareas</h2>
+                        <span className="text-sm text-slate-500">{tasks.length} tareas en total</span>
+                    </div>
 
-            <div className="mt-10 flex gap-4">
-                <button
-                    onClick={() => setOcultarLaravel(!ocultarLaravel)}
-                    className={`px-6 py-2 rounded-lg transition ${
-                        ocultarLaravel
-                            ? "bg-gray-400 hover:bg-gray-500 text-white"
-                            : "bg-indigo-500 hover:bg-indigo-600 text-white"
-                    }`}
-                >
-                    {ocultarLaravel
-                        ? "Mostrar todas las tareas"
-                        : "Ocultar tareas Laravel"}
-                </button>
+                    {tasks.length === 0 ? (
+                        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
+                            <p className="text-slate-500">No hay tareas pendientes. ¡Buen trabajo!</p>
+                        </div>
+                    ) : (
+                        <ul className="space-y-3">
+                            {tasks.map(task => (
+                                <TaskItem key={task.id} task={task} />
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -11,62 +11,10 @@ use Illuminate\Http\Request;
 
 // Memoria Temporal4
 
-$tareas = [];
-
-// Página Pública de Bienvenida
-
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-// Crear Tarea
-
-Route::get('/crear-tarea', function () {
-    return Inertia::render('CrearTarea');
-})->name('crear-tarea');
-
-Route::post('/crear-tarea', function (Request $request) {
-
-    $tareas = json_decode(Storage::get('tareas.json'), true);
-
-    $tareas[] = [
-        'id' => count($tareas) + 1,
-        'titulo' => $request->titulo,
-    ];
-
-    Storage::put('tareas.json', json_encode($tareas));
-
-    return back(); // se queda en crear
-});
-
-// Listar Tareas
-Route::get('/tasks', function () {
-
-    $tareas = json_decode(Storage::get('tareas.json'), true);
-
-    return Inertia::render('Tasks/Index', [
-        'tareasIniciales' => $tareas,
-    ]);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-Route::get('/test', function () {
-    return Inertia::render('Test');
-});
-
-// Nueva ruta para Tasks
-Route::get('/tasks', function () {
-    return Inertia::render('tasks'); // aquí cargará Tasks.jsx
-});
+// Tareas (CRUD)
+Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
+Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 
 require __DIR__ . '/auth.php';
